@@ -139,6 +139,8 @@ const FuelDeliverySheet = ({setFuelDeliverySheetPositionSup ,fuelDeliverySheetSu
 
   const [isAddingVehicleSheetOpen, setIsAddingVehicleSheetOpen] = useState(false);
 
+  const [onSelectedSuggestion, setOnSelectedSuggestion] = useState([]);
+
   const toggleAddingVehicleSheet = () => {
     setIsAddingVehicleSheetOpen(!isAddingVehicleSheetOpen);
     if (fuelDeliverySheetSup) {
@@ -177,6 +179,10 @@ const FuelDeliverySheet = ({setFuelDeliverySheetPositionSup ,fuelDeliverySheetSu
 
     fetchVehicles();
   }, []);
+
+  useEffect(() => {
+    onSelectSuggestion(onSelectedSuggestion)
+  }, [onSelectedSuggestion])
 
   const handleSelectVehicle = (vehicle) => {
     setSelectedVehicle(vehicle);
@@ -400,7 +406,7 @@ const FuelDeliverySheet = ({setFuelDeliverySheetPositionSup ,fuelDeliverySheetSu
       </View>
     </Animated.View>
     <AddingVehicleSheet isOpen={isAddingVehicleSheetOpen} onClose={toggleAddingVehicleSheet}/>
-    <LocationSheet isOpen={isLocationSheetOpen} onClose={toggleLocationSheet} onSelectSuggestion={onSelectSuggestion}/>
+    <LocationSheet isOpen={isLocationSheetOpen} onClose={toggleLocationSheet} onSelectSuggestion={setOnSelectedSuggestion}/>
     </View>
   );
 };
