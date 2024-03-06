@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Register from './src/auth/Register';
 import Login from './src/auth/Login';
-import Home from './src/auth/Home';
+import Home from './src/screens/Home';
 import * as Keychain from 'react-native-keychain';
 import * as SecureStore from 'expo-secure-store';
 import Verification from './src/auth/Verification';
@@ -13,19 +13,24 @@ const App = () => {
   const [phoneNumber, setPhoneNumber] = useState();
 
   const checkTokenExpiration = async () => {
-    const expirationTime = await SecureStore.getItemAsync('expiration_time');
+    const expirationTime = await SecureStore.getItemAsync('access_expiration_time');
     if (expirationTime) {
-      const expirationTimeMs = parseInt(expirationTime, 10);
-      if (expirationTimeMs > new Date().getTime()) {
+      const expirationDate = new Date(expirationTime);
+      const now = new Date();
+      if (expirationDate > now) {
         setStatus('home');
+      } else {
+        setStatus('register');
       }
-      
+    } else {
+      setStatus('register');
     }
   };
-
+  
   useEffect(() => {
     checkTokenExpiration();
   }, []);
+  
 
   if (status === 'register') {
     return <Register setStatus={setStatus} setPhoneNumber={setPhoneNumber} />;

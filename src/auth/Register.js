@@ -13,7 +13,7 @@ const Register = ({ setStatus, setPhoneNumber }) => {
   const [password, setPassword] = useState('');
   const handleRegister = async () => {
     try {
-      const response = await axios.post('http://157.245.22.206/customer/register', {
+      const response = await axios.post('http://67.207.72.73/customer/register', {
         phone,
         password,
         deviceToken: "1",
@@ -70,9 +70,9 @@ const Register = ({ setStatus, setPhoneNumber }) => {
         <TouchableOpacity style={tw`justify-center items-center bg-[#313e47] mb-[5rem] mt-[25px] rounded-xl w-[85%] h-[8%]`} title="Register" onPress={handleRegister}>
         <Text style={tw`text-[#fff] text-[23px]`}>Get Started</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={handleToLogin}>
+      {/* <TouchableOpacity onPress={handleToLogin}>
        <Text>pass to login</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 };

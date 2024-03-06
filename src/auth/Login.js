@@ -33,19 +33,22 @@ const Login = ({ setStatus }) => {
 `;
   const handleLogin = async () => {
     try {
-      const response = await axios.post("http://157.245.22.206/users/login", {
+      const response = await axios.post("http://67.207.72.73/users/login", {
         phone: phoneNumber,
         password,
       });
       if (response.data.status === 200) {
-        const access_token = response.data.access_token;
-        const refresh_token = response.data.refresh_token;
-        const expirationTime = new Date().getTime() + 5 * 60 * 1000;
+        const access_token = response.data.access_token.token;
+        const refresh_token = response.data.refresh_token.token;
+        const accessExpirationTime = response.data.access_token.expires;
+        const refreshExpirationTime = response.data.refresh_token.expires;
+        const userId = response.data.userId;
+        await SecureStore.setItemAsync("userId", userId.toString())
         await SecureStore.setItemAsync("access_token", access_token);
         await SecureStore.setItemAsync("refresh_token", refresh_token);
         await SecureStore.setItemAsync(
-          "expiration_time",
-          expirationTime.toString()
+          "access_expiration_time",
+          accessExpirationTime.toString()
         );
         setStatus('home');
       }
@@ -82,7 +85,7 @@ const Login = ({ setStatus }) => {
         <Text style={tw`text-[#fff] text-[23px]`}>Sign In</Text>
       </TouchableOpacity>
       <View style={tw`flex flex-row items-center justify-between w-[85%]`}>
-        <Text style={tw`ml-[3px] text-[#313e47]`}>Remember me</Text>
+        {/* <Text style={tw`ml-[3px] text-[#313e47]`}>Remember me</Text> */}
         <Text style={tw`text-[#313e47]`}>Forgot Password?</Text>
       </View>
     </View>
