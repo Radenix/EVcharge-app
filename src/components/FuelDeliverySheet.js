@@ -14,7 +14,7 @@ import LocationSheet from "./LocationSheet";
 
 const { width, height } = Dimensions.get("window");
 
-const FuelDeliverySheet = ({setFuelDeliverySheetPositionSup ,fuelDeliverySheetSup, setFuelDeliverySheetSup, onSelectSuggestion}) => {
+const FuelDeliverySheet = ({setFuelDeliverySheetPositionSup ,fuelDeliverySheetSup, setFuelDeliverySheetSup, fuelDeliverySheetPositionSup}) => {
   const fuelDeliverySheetPosition = useRef(new Animated.Value(height)).current;
   setFuelDeliverySheetPositionSup(fuelDeliverySheetPosition);
 
@@ -130,7 +130,8 @@ const FuelDeliverySheet = ({setFuelDeliverySheetPositionSup ,fuelDeliverySheetSu
   
     return () => backHandler.remove();
   }, [fuelDeliverySheetSup]);
-
+  
+  const [selectedLocation, setSelectedLocation] = useState(null);
   const [selectedCharge, setSelectedCharge] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
@@ -139,20 +140,27 @@ const FuelDeliverySheet = ({setFuelDeliverySheetPositionSup ,fuelDeliverySheetSu
 
   const [isAddingVehicleSheetOpen, setIsAddingVehicleSheetOpen] = useState(false);
 
-  const [onSelectedSuggestion, setOnSelectedSuggestion] = useState([]);
 
   const toggleAddingVehicleSheet = () => {
-    setIsAddingVehicleSheetOpen(!isAddingVehicleSheetOpen);
-    if (fuelDeliverySheetSup) {
+    if (isAddingVehicleSheetOpen) {
+      setIsAddingVehicleSheetOpen(false);
+      setFuelDeliverySheetSup(true);
       Animated.timing(fuelDeliverySheetPosition, {
-        toValue: height,
+        toValue: 0,
         duration: 800,
         useNativeDriver: false,
-      }).start(() => setFuelDeliverySheetSup(false));
-      return true;
-    }
-    return false;
+      }).start();
+    } else {
+      setIsAddingVehicleSheetOpen(true);
+      if (fuelDeliverySheetSup) {
+        Animated.timing(fuelDeliverySheetPosition, {
+          toValue: height,
+          duration: 800,
+          useNativeDriver: false,
+        }).start(() => setFuelDeliverySheetSup(false));
+      }    
   };
+};
 
   useEffect(() => {
     const fetchVehicles = async () => {
@@ -180,9 +188,9 @@ const FuelDeliverySheet = ({setFuelDeliverySheetPositionSup ,fuelDeliverySheetSu
     fetchVehicles();
   }, []);
 
-  useEffect(() => {
-    onSelectSuggestion(onSelectedSuggestion)
-  }, [onSelectedSuggestion])
+  // useEffect(() => {
+  //   onSelectSuggestion(onSelectedSuggestion)
+  // }, [onSelectedSuggestion])
 
   const handleSelectVehicle = (vehicle) => {
     setSelectedVehicle(vehicle);
@@ -192,17 +200,27 @@ const FuelDeliverySheet = ({setFuelDeliverySheetPositionSup ,fuelDeliverySheetSu
   const [isLocationSheetOpen, setIsLocationSheetOpen] = useState(false);
 
   const toggleLocationSheet = () => {
-    setIsLocationSheetOpen(!isLocationSheetOpen);
-    if (fuelDeliverySheetSup) {
+    if (isLocationSheetOpen) {
+      setIsLocationSheetOpen(false);
+      setFuelDeliverySheetSup(true);
       Animated.timing(fuelDeliverySheetPosition, {
-        toValue: height,
+        toValue: 0,
         duration: 800,
         useNativeDriver: false,
-      }).start(() => setFuelDeliverySheetSup(false));
-      return true;
+      }).start();
+    } else {
+      setIsLocationSheetOpen(true);
+      if (fuelDeliverySheetSup) {
+        Animated.timing(fuelDeliverySheetPosition, {
+          toValue: height,
+          duration: 800,
+          useNativeDriver: false,
+        }).start(() => setFuelDeliverySheetSup(false));
+      }
     }
-    return false;
   };
+  
+  
 
 
 
@@ -251,7 +269,11 @@ const FuelDeliverySheet = ({setFuelDeliverySheetPositionSup ,fuelDeliverySheetSu
               <View style={{flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 15}}>
                 <View style={{flexDirection: 'row', alignItems: 'center', gap: 7}}>
                   <SvgXml xml={locationIcon} width={27} height={26}/>
-                  <Text style={{fontFamily: 'Poppins-Regular', marginTop: 3}}>Select a location</Text>
+                  {selectedLocation === null ?
+                   <Text style={{fontFamily: 'Poppins-Regular', marginTop: 3}}>Select a location</Text>
+                    :
+                   <Text style={{fontFamily: 'Poppins-Regular', marginTop: 3}}>{selectedLocation}</Text>
+                  }
                 </View>
                 <Text>
                   <SvgXml xml={arrowIcon} width={17} height={17} style={{transform: [{rotate: '90deg'}]}} />
@@ -406,7 +428,7 @@ const FuelDeliverySheet = ({setFuelDeliverySheetPositionSup ,fuelDeliverySheetSu
       </View>
     </Animated.View>
     <AddingVehicleSheet isOpen={isAddingVehicleSheetOpen} onClose={toggleAddingVehicleSheet}/>
-    <LocationSheet isOpen={isLocationSheetOpen} onClose={toggleLocationSheet} onSelectSuggestion={setOnSelectedSuggestion}/>
+    <LocationSheet isOpen={isLocationSheetOpen} onClose={toggleLocationSheet} setSelectedLocation={setSelectedLocation} />
     </View>
   );
 };

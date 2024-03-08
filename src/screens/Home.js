@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import MapView, {Polyline} from "react-native-maps";
+import * as Location from "expo-location";
 import { SvgXml } from "react-native-svg";
 import { useFonts } from "expo-font";
 import AppLoading from "expo-app-loading";
@@ -28,7 +29,13 @@ const Home = ({ setStatus }) => {
   const [fuelDeliverySheetPositionSup, setFuelDeliverySheetPositionSup] = useState();
   const [toggleMenu, setToggleMenu] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [polyline, setPolyline] = useState([]);
+  // const [polyline, setPolyline] = useState([]);
+  const [region, setRegion] = useState({
+    latitude: 40.4093,
+    longitude: 49.8671,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+  });
 
   const pan = useRef(new Animated.ValueXY()).current;
 
@@ -111,6 +118,31 @@ const Home = ({ setStatus }) => {
     }
   };
 
+  useEffect(() => {
+    const getLocation = async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        console.error("Permission to access location was denied");
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      const { latitude, longitude } = location.coords;
+      setRegion({
+        ...region,
+        latitude,
+        longitude,
+      });
+    };
+
+    getLocation();
+
+    return () => {
+      Location.stopLocationUpdatesAsync();
+    };
+  }, []);
+
+
   const [fontsLoaded] = useFonts({
     "Poppins-Medium": require("../../assets/fonts/Poppins-Medium.ttf"),
     "Poppins-Regular": require("../../assets/fonts/Poppins-Regular.ttf"),
@@ -124,23 +156,19 @@ const Home = ({ setStatus }) => {
     <View style={{ flex: 1 }}>
       <MapView
         style={{ flex: 1, position: "relative" }}
-        initialRegion={{
-          latitude: 40.4093,
-          longitude: 49.8671,
-          latitudeDelta: LATITUDE_DELTA,
-          longitudeDelta: LONGITUDE_DELTA,
-        }}
+        region={region}
         showsUserLocation={true}
         onRegionChange={handleMapRegionChange}
         onRegionChangeComplete={handleMapRegionChangeComplete}
-      >
-        <Polyline 
+        showsMyLocationButton={false}
+      />
+        {/* <Polyline 
           coordinates={polyline}
           strokeColor="#000"
           strokeWidth={6}  
           lineDashPattern={[1]}
-        />
-      </MapView>
+        /> */}
+      {/* </MapView> */}
       <TouchableOpacity onPress={handleOpenDrawer} style={{display: toggleMenu ? 'flex' : 'none', position: 'absolute', top: 30, left: 10, padding: 10, zIndex: 2}}>
         <SvgXml xml={menuIcon} width={30} height={30}/>
       </TouchableOpacity>
@@ -163,9 +191,10 @@ const Home = ({ setStatus }) => {
       <View style={{ display: drawerOpen ? 'none' : 'flex' }}>
         <FuelDeliverySheet
           setFuelDeliverySheetPositionSup={setFuelDeliverySheetPositionSup}
+          fuelDeliverySheetPositionSup={fuelDeliverySheetPositionSup}
           fuelDeliverySheetSup={fuelDeliverySheetSup}
           setFuelDeliverySheetSup={setFuelDeliverySheetSup}
-          onSelectSuggestion={setPolyline}
+          // onSelectSuggestion={setPolyline}
         />
       </View>
     </View>

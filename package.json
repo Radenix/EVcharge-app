@@ -40,7 +40,8 @@
     "react-native-svg": "^14.1.0",
     "react-native-web": "~0.19.6",
     "react-navigation": "^5.0.0",
-    "twrnc": "^3.6.8"
+    "twrnc": "^3.6.8",
+    "expo-location": "~16.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
