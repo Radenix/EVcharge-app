@@ -22,7 +22,7 @@ const OTPinput = ({setStatus}) => {
         }
 
         if (newOtp.length === 4) {
-          setStatus('login');
+          setStatus('Login');
         }
         
         return newOtp;

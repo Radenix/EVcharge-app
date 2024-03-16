@@ -6,6 +6,7 @@ import {
   Animated,
   TouchableOpacity,
   PanResponder,
+  StyleSheet
 } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import MapView, {Polyline} from "react-native-maps";
@@ -23,12 +24,14 @@ const ASPECT_RATIO = width / height;
 const LATITUDE_DELTA = 0.0922;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
-const Home = ({ setStatus }) => {
+const MainScreen = ({ setStatus }) => {
   const [selectService, setSelectService] = useState(true);
   const [fuelDeliverySheetSup, setFuelDeliverySheetSup] = useState(false);
   const [fuelDeliverySheetPositionSup, setFuelDeliverySheetPositionSup] = useState();
   const [toggleMenu, setToggleMenu] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [isLocationSheetOpened, setIsLocationSheetOpened] = useState(false);
+  const [isAddingVehicleSheetOpened, setIsAddingVehicleSheetOpened] = useState(false);
   // const [polyline, setPolyline] = useState([]);
   const [region, setRegion] = useState({
     latitude: 40.4093,
@@ -60,6 +63,7 @@ const Home = ({ setStatus }) => {
 
   const handleOpenDrawer = () => {
     setDrawerOpen(true);
+    setToggleMenu(false);
     Animated.timing(pan, {
       toValue: { x: 0, y: 0 },
       duration: 200,
@@ -68,6 +72,7 @@ const Home = ({ setStatus }) => {
   };
 
   const handleCloseDrawer = () => {
+    setToggleMenu(true);
     Animated.timing(pan, {
       toValue: { x: -200, y: 0 },
       duration: 200,
@@ -112,7 +117,7 @@ const Home = ({ setStatus }) => {
       await SecureStore.deleteItemAsync("access_token");
       await SecureStore.deleteItemAsync("refresh_token");
       await SecureStore.deleteItemAsync("access_expiration_time");
-      setStatus("login");
+      setStatus("Login");
     } catch (error) {
       console.error("Logout failed:", error);
     }
@@ -153,9 +158,9 @@ const Home = ({ setStatus }) => {
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: "black" }}>
       <MapView
-        style={{ flex: 1, position: "relative" }}
+        style={{ flex: 1, position: "relative", opacity: (isLocationSheetOpened || isAddingVehicleSheetOpened)? 0.5 : 1 }}
         region={region}
         showsUserLocation={true}
         onRegionChange={handleMapRegionChange}
@@ -168,6 +173,7 @@ const Home = ({ setStatus }) => {
           strokeWidth={6}  
           lineDashPattern={[1]}
         /> */}
+          
       {/* </MapView> */}
       <TouchableOpacity onPress={handleOpenDrawer} style={{display: toggleMenu ? 'flex' : 'none', position: 'absolute', top: 30, left: 10, padding: 10, zIndex: 2}}>
         <SvgXml xml={menuIcon} width={30} height={30}/>
@@ -194,6 +200,9 @@ const Home = ({ setStatus }) => {
           fuelDeliverySheetPositionSup={fuelDeliverySheetPositionSup}
           fuelDeliverySheetSup={fuelDeliverySheetSup}
           setFuelDeliverySheetSup={setFuelDeliverySheetSup}
+          setIsLocationSheetOpened={setIsLocationSheetOpened}
+          setIsAddingVehicleSheetOpened={setIsAddingVehicleSheetOpened}
+          setToggleMenu={setToggleMenu}
           // onSelectSuggestion={setPolyline}
         />
       </View>
@@ -201,4 +210,4 @@ const Home = ({ setStatus }) => {
   );
 };
 
-export default Home;
+export default MainScreen;

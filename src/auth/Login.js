@@ -50,7 +50,7 @@ const Login = ({ setStatus }) => {
           "access_expiration_time",
           accessExpirationTime.toString()
         );
-        setStatus('home');
+        setStatus('MainScreen');
       }
     } catch (error) {
       console.error("Login failed:", error);

@@ -1,5 +1,3 @@
-// Register.js
-
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert} from "react-native";
 import tw from "twrnc";
@@ -21,7 +19,7 @@ const Register = ({ setStatus, setPhoneNumber }) => {
         requestID: "1"
       });
       if (response.data.status === 200) {
-        setStatus('verification');
+        setStatus('Verification');
         setErrorMessage('')
         const maskedPhoneNumber = phone.slice(0, 9) + 'X'.repeat(phone.length - 9);
         setPhoneNumber(maskedPhoneNumber)
@@ -35,7 +33,7 @@ const Register = ({ setStatus, setPhoneNumber }) => {
   };
 
   const handleToLogin = () =>{
-    setStatus('login')
+    setStatus('Login')
   }
 
   const [fontsLoaded] = useFonts({

@@ -10,11 +10,21 @@ import * as SecureStore from "expo-secure-store";
 import Checkbox from "expo-checkbox";
 import axios from 'axios';
 import LocationSheet from "./LocationSheet";
+import Checkout from "./Checkout";
 
 
 const { width, height } = Dimensions.get("window");
 
-const FuelDeliverySheet = ({setFuelDeliverySheetPositionSup ,fuelDeliverySheetSup, setFuelDeliverySheetSup, fuelDeliverySheetPositionSup}) => {
+const FuelDeliverySheet = ({
+  setFuelDeliverySheetPositionSup, 
+  fuelDeliverySheetSup, 
+  setFuelDeliverySheetSup, 
+  fuelDeliverySheetPositionSup, 
+  setIsLocationSheetOpened, 
+  setIsAddingVehicleSheetOpened, 
+  setToggleMenu
+}) => {
+  
   const fuelDeliverySheetPosition = useRef(new Animated.Value(height)).current;
   setFuelDeliverySheetPositionSup(fuelDeliverySheetPosition);
 
@@ -138,13 +148,17 @@ const FuelDeliverySheet = ({setFuelDeliverySheetPositionSup ,fuelDeliverySheetSu
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [vehicles, setVehicles] = useState([]);
 
-  const [isAddingVehicleSheetOpen, setIsAddingVehicleSheetOpen] = useState(false);
 
+
+  ////VEHICLESHEET
+
+  const [isAddingVehicleSheetOpen, setIsAddingVehicleSheetOpen] = useState(false);
 
   const toggleAddingVehicleSheet = () => {
     if (isAddingVehicleSheetOpen) {
       setIsAddingVehicleSheetOpen(false);
       setFuelDeliverySheetSup(true);
+      setToggleMenu(true)
       Animated.timing(fuelDeliverySheetPosition, {
         toValue: 0,
         duration: 800,
@@ -152,6 +166,7 @@ const FuelDeliverySheet = ({setFuelDeliverySheetPositionSup ,fuelDeliverySheetSu
       }).start();
     } else {
       setIsAddingVehicleSheetOpen(true);
+      setToggleMenu(false)
       if (fuelDeliverySheetSup) {
         Animated.timing(fuelDeliverySheetPosition, {
           toValue: height,
@@ -196,6 +211,7 @@ const FuelDeliverySheet = ({setFuelDeliverySheetPositionSup ,fuelDeliverySheetSu
     setSelectedVehicle(vehicle);
   };
 
+  ////LOCATIONSHEET
 
   const [isLocationSheetOpen, setIsLocationSheetOpen] = useState(false);
 
@@ -203,6 +219,7 @@ const FuelDeliverySheet = ({setFuelDeliverySheetPositionSup ,fuelDeliverySheetSu
     if (isLocationSheetOpen) {
       setIsLocationSheetOpen(false);
       setFuelDeliverySheetSup(true);
+      setToggleMenu(true)
       Animated.timing(fuelDeliverySheetPosition, {
         toValue: 0,
         duration: 800,
@@ -210,6 +227,7 @@ const FuelDeliverySheet = ({setFuelDeliverySheetPositionSup ,fuelDeliverySheetSu
       }).start();
     } else {
       setIsLocationSheetOpen(true);
+      setToggleMenu(false)
       if (fuelDeliverySheetSup) {
         Animated.timing(fuelDeliverySheetPosition, {
           toValue: height,
@@ -219,9 +237,24 @@ const FuelDeliverySheet = ({setFuelDeliverySheetPositionSup ,fuelDeliverySheetSu
       }
     }
   };
-  
-  
 
+  setIsLocationSheetOpened(isLocationSheetOpen)
+  setIsAddingVehicleSheetOpened(isAddingVehicleSheetOpen)
+
+
+  ////CHECKOUT
+
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+
+  const toggleCheckout = () => {
+    if(isCheckoutOpen){
+      setIsCheckoutOpen(false);
+      setToggleMenu(true)
+    } else {
+      setIsCheckoutOpen(true)
+      setToggleMenu(false)
+    }
+  };
 
 
   if (!fontsLoaded) {
@@ -405,6 +438,7 @@ const FuelDeliverySheet = ({setFuelDeliverySheetPositionSup ,fuelDeliverySheetSu
           </View>
         </TouchableOpacity>
         <TouchableOpacity
+          onPress={toggleCheckout}
           activeOpacity={.8}
           style={{
             backgroundColor: "#39434e",
@@ -429,6 +463,7 @@ const FuelDeliverySheet = ({setFuelDeliverySheetPositionSup ,fuelDeliverySheetSu
     </Animated.View>
     <AddingVehicleSheet isOpen={isAddingVehicleSheetOpen} onClose={toggleAddingVehicleSheet}/>
     <LocationSheet isOpen={isLocationSheetOpen} onClose={toggleLocationSheet} setSelectedLocation={setSelectedLocation} />
+    {isCheckoutOpen && <Checkout selectedLocation={selectedLocation} selectedVehicle={selectedVehicle} selectedCharge={selectedCharge} onClose={toggleCheckout} isOpen= {isCheckoutOpen}/>}
     </View>
   );
 };

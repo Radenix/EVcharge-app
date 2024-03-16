@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import Register from './src/auth/Register';
 import Login from './src/auth/Login';
-import Home from './src/screens/Home';
+import MainScreen from './src/screens/MainScreen';
 import * as Keychain from 'react-native-keychain';
 import * as SecureStore from 'expo-secure-store';
 import Verification from './src/auth/Verification';
-import { Alert } from 'react-native';
+import { TouchableWithoutFeedback, Alert, View } from 'react-native';
+import * as NavigationBar from "expo-navigation-bar"
 
 
 const App = () => {
-  const [status, setStatus] = useState('register');
+
+  const [status, setStatus] = useState('Register');
   const [phoneNumber, setPhoneNumber] = useState();
 
   const checkTokenExpiration = async () => {
@@ -18,31 +20,35 @@ const App = () => {
       const expirationDate = new Date(expirationTime);
       const now = new Date();
       if (expirationDate > now) {
-        setStatus('home');
+        setStatus('MainScreen');
       } else {
-        setStatus('register');
+        setStatus('Register');
       }
     } else {
-      setStatus('register');
+      setStatus('Register');
     }
   };
   
   useEffect(() => {
     checkTokenExpiration();
   }, []);
-  
 
-  if (status === 'register') {
+  // const [barVisibility, setBarVisibility] = useState('hidden');
+
+  NavigationBar.setVisibilityAsync('hidden');
+  NavigationBar.setBehaviorAsync('inset-swipe');
+
+  if (status === 'Register') {
     return <Register setStatus={setStatus} setPhoneNumber={setPhoneNumber} />;
   }
-  if (status === 'verification') {
+  if (status === 'Verification') {
     return <Verification setStatus={setStatus} phoneNumber={phoneNumber} />;
   }
-  if (status === 'login') {
+  if (status === 'Login') {
     return <Login setStatus={setStatus} />;
   }
-  if (status === 'home') {
-    return <Home setStatus={setStatus} />;
+  if (status === 'MainScreen') {
+    return <MainScreen setStatus={setStatus} />;
   }
 };
 
